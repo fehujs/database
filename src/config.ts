@@ -1,10 +1,14 @@
 import { cwd } from "process"
+import { join } from "path"
+import { pathToFileURL } from "url"
+
 
 let _config
 try {
-    _config = await import(cwd() + "/config/database.js")
+    const configPath = pathToFileURL(join(cwd(), "config", "database.js")).href
+    _config = (await import(configPath))
 } catch (e: any) {
-    console.log(`[database] config: config file not found, applying default config.`)
+    console.log(`[database] config: config file not found, applying default config.`, e)
     _config = {
         NAME: "database.sqlite",
         PATH: "database.sqlite",
