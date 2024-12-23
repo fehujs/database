@@ -16,8 +16,8 @@ importers:
         version: 5.1.7
     devDependencies:
       '@fehujs/build':
-        specifier: ^0.1.1
-        version: 0.1.1
+        specifier: ^0.2.0
+        version: 0.2.0
       '@fehujs/tsconfig':
         specifier: ^1.0.0
         version: 1.0.0
@@ -180,8 +180,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@fehujs/build@0.1.1':
-    resolution: {integrity: sha512-DzV5kWKJGU4qqQKXxTDEaLWx4fPiPlmeH5AtzwD2xUVx9QNuY0vy9tYSm7ZHoLzXO1o/8C72js0PGy8XY2Tyrw==}
+  '@fehujs/build@0.2.0':
+    resolution: {integrity: sha512-5eRH3gmjOvRm7FpKgF+UAehxSSbQ60fP2fwuAqY3fzOJIbg9cPbe7pTMi4dX2POYaQyFPdTTznYvxn5IJyjNxg==}
 
   '@fehujs/tsconfig@1.0.0':
     resolution: {integrity: sha512-7GIKqf6Gslo8xbdXJmhOqHvt3bDnNx1iORkKBsbgy7qygRuoBxTVRarwYEY9ZIlmHlF9MjocVMmuV89BStVXww==}
@@ -844,7 +844,7 @@ snapshots:
   '@esbuild/win32-x64@0.24.2':
     optional: true
 
-  '@fehujs/build@0.1.1':
+  '@fehujs/build@0.2.0':
     dependencies:
       esbuild: 0.24.2
 

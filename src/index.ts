@@ -10,7 +10,7 @@
 import BaseMigration from "./base-migration"
 import BaseModel from "./base-model"
 import BaseSeeder from "./base-seeder"
-import { provider, SQLiteDatabaseProvider } from "./providers"
+import SQLiteDatabaseProvider from "./providers/sqlite"
 import type {
     AlterTable,
     Column,
@@ -44,7 +44,6 @@ export {
     ModelObject,
     Operator,
     PrimaryKey,
-    provider,
     Serialize,
     SQLiteDatabaseProvider,
     SqlOperator,

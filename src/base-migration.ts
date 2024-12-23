@@ -15,7 +15,7 @@ export default abstract class BaseMigration {
     /** delete/alter back table */
     public async down() {}
 
-    public static runMigration(migrationName: string, migration: BaseMigration): void {
+    public static async runMigration(migrationName: string, migration: BaseMigration): Promise<void> {
         /** 
          * the mode can be set from command line interface by writing `{tableName}={mode}` after the `migrate` 
          * script
@@ -27,12 +27,12 @@ export default abstract class BaseMigration {
          * in args (depending on their mode).
          */
 
-        if(process.argv.length === 2) {  // process.argv has two args (nodejs path and dist/main.js path)
+        if(process.argv[2].split(",").length === 1) {  // the only arg specified is the command name (aka `migrate`)
             mode = BaseMigration.checkIfMigrationWasAlreadyRunned(migrationName)
         } else {
-            mode = process.argv.includes(`${migrationName}=down`) 
+            mode = process.argv[2].split(",").includes(`${migrationName}=down`) 
                 ? "down"
-                : process.argv.includes(`${migrationName}=up`)
+                : process.argv[2].split(",").includes(`${migrationName}=up`)
                     ? "up"
                     : "pass"
         }
@@ -40,14 +40,24 @@ export default abstract class BaseMigration {
         try {
             switch (mode) {
                 case "up":
-                    migration.up()
-                    BaseMigration.saveMigrationRunned(migrationName, "up")
-                    console.log(`[database] info: migration ${migrationName} successfully applied.`)
+                    try {
+                        await migration.up()
+                        BaseMigration.saveMigrationRunned(migrationName, "up")
+                        console.log(`[database] info: migration ${migrationName} successfully applied.`)
+                    } catch (err: any) {
+                        console.log(err.message)
+                    }
+                    
                     break
                 case "down":
-                    migration.down()
-                    BaseMigration.saveMigrationRunned(migrationName, 'down')
-                    console.log(`[database] info: migration ${migrationName} successfully downed.`)
+                    try {
+                        await migration.down()
+                        BaseMigration.saveMigrationRunned(migrationName, 'down')
+                        console.log(`[database] info: migration ${migrationName} successfully downed.`)    
+                    } catch (err) {
+                        console.log(err)
+                    }
+
                     break
             }
         } catch (e: any) {
@@ -73,7 +83,7 @@ export default abstract class BaseMigration {
         const migrationFilePath = BaseMigration.migrationsFilePath
         let migrationsRunned = this.fetchMigrationsFile()
 
-        if (action === "up") {
+        if (action === "up" && !migrationsRunned.includes(migrationName)) {
             migrationsRunned.push(migrationName)
         } else if (action === "down") {
             migrationsRunned = migrationsRunned.filter(m => m !== migrationName)

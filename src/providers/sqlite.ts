@@ -50,32 +50,46 @@ export default class SQLiteDatabaseProvider implements DatabaseProviderInterface
         return knex(table.name)
     }
 
-    public createTable (table: CreateTable): void {
-        this.connectDb()
+    public async createTable (table: CreateTable): Promise<void> {
+        return new Promise(async (resolve, reject) => {
+            this.connectDb()
 
-        const q = getCreateTableSqlScript(table)
-        this._db!.serialize(() => {
-            this.db!.run(q)
+            const q = getCreateTableSqlScript(table)
+            this._db!.serialize(() => {
+                this.db!.run(q, async (_: any, err: any) => {
+                    if (err) {
+                        reject(`[database] error: cannot create table ${table.name} : ${err.name}, ${err.message}`)
+                    }
+
+                    this.closeConnection()
+                    resolve()
+                })
+            })
         })
-
-        this.closeConnection()
     }
 
     /**
      * Not implemented yet
      */
-    public alterTable (table: AlterTable): void {
+    public async alterTable (table: AlterTable): Promise<void> {
         throw new Error("[database] error: not implemented yet.")
     }
 
-    public dropTable (table: Table): void {
-        this.connectDb()
+    public async dropTable (table: Table): Promise<void> {
+        return new Promise(async (resolve, reject) => {
+            this.connectDb()
         
-        this._db!.serialize(() => {
-            this._db!.run(`DROP TABLE ${table.name};`)
+            this._db!.serialize(() => {
+                this._db!.run(`DROP TABLE ${table.name};`, async (_: any, err: any) => {
+                    if (err) {
+                        reject(`[database] error: cannot drop table ${table.name} : ${err.name}, ${err.message}`)
+                    }
+                    
+                    this.closeConnection()
+                    resolve()
+                })
+            })
         })
-        
-        this.closeConnection()
     }
 
     public async select<T extends ModelObject> (table: Table, condition: Conditions = {}): Promise<T[]> {

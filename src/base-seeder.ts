@@ -2,21 +2,20 @@
 export default abstract class BaseSeeder {
     public async run() {}
 
-    public static runSeeder(seederName: string, seeder: BaseSeeder) {
+    public static async runSeeder(seederName: string, seeder: BaseSeeder) {
         /** 
-         * the mode can be set from command line interface by writing `{tableName}={mode}` after the `run:seeders` 
+         * the mode can be set from command line interface by writing `{tableName}` after the `seeders` 
          * script
          */
-        const shouldRun = process.argv.includes(`${seederName}`)
+        const shouldRun = process.argv[2].split(',').includes(`${seederName}`)
     
         if (shouldRun) {
             try {
-                seeder.run()
+                await seeder.run()
+                console.log(`[database] info: seeder ${seederName} successfully applied.`)
             } catch (e: any) {
                 console.error(`[database] error: an error occurred during ${seederName} seeder running: ${e.message}`)
             }
         }
-    
-        console.log(`[database] info: seeder ${seederName} successfully applied.`)
     }    
 }

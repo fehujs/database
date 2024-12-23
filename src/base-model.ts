@@ -1,9 +1,10 @@
-import { provider } from "./providers"
+import SQLiteDatabaseProvider from "./providers/sqlite"
 import { handler } from "./proxy-handler"
-import type { Conditions, ModelObject, Operator, Serialize, Table } from "./types"
+import type { Conditions, DatabaseProviderInterface, ModelObject, Operator, Serialize, Table } from "./types"
 
 
 export default class BaseModel {
+    static provider: DatabaseProviderInterface = new SQLiteDatabaseProvider()
     protected data: ModelObject = {}
     protected idCol: string = 'id' // to change if you want to use another name
     public static table: Table
@@ -14,7 +15,7 @@ export default class BaseModel {
 
     public static async create(options: ModelObject) {
         const model = new this()
-        model._setDatas(await provider.insert(model._getTable(), options))
+        model._setDatas(await this.provider.insert(model._getTable(), options))
         return model
     }
 
@@ -22,7 +23,7 @@ export default class BaseModel {
         const model = new this()
         let result
         try {
-            result = (await provider.select(
+            result = (await this.provider.select(
                 { name: model._getTable().name },
                 BaseModel._getKVCondition(model.idCol, id))
             )[0]
@@ -40,7 +41,7 @@ export default class BaseModel {
         let results: ModelObject[] = []
 
         try {
-            results = await provider.select(
+            results = await this.provider.select(
                 { name: model._getTable().name },
                 BaseModel._getKVCondition(key, value)
             )
@@ -64,7 +65,7 @@ export default class BaseModel {
     public static async findWithSql(condition: Conditions): Promise<BaseModel[]> {
         let models = []
         const model = new this()
-        const results = await provider.select({ name: model._getTable().name }, condition)
+        const results = await this.provider.select({ name: model._getTable().name }, condition)
 
         for (const result of results) {
             if (result) {
@@ -80,7 +81,7 @@ export default class BaseModel {
     public static async findAll(): Promise<BaseModel[]> {
         let models = []
         const model = new this()
-        const results = await provider.select({ name: model._getTable().name }, {})
+        const results = await this.provider.select({ name: model._getTable().name }, {})
 
         for (const result of results) {
             if (result) {
@@ -131,7 +132,7 @@ export default class BaseModel {
 
     /** save the item in the db after update */
     public async save(): Promise<void> {
-        await provider.update(
+        await this._getProvider().update(
             { name: this._getTable().name },
             BaseModel._getKVCondition(this.idCol, this.data[this.idCol]),
             this.data
@@ -140,7 +141,7 @@ export default class BaseModel {
 
     /** deletes the item in db */
     public async destroy() {
-        await provider.delete(
+        await this._getProvider().delete(
             { name: this._getTable().name },
             BaseModel._getKVCondition(this.idCol, this.data[this.idCol])
         )
@@ -166,6 +167,10 @@ export default class BaseModel {
 
     public _getTable() {
         return (this.constructor as typeof BaseModel).table
+    }
+
+    public _getProvider() {
+        return (this.constructor as typeof BaseModel).provider
     }
 
     protected static _getKVCondition(key: string, value: string | number) {
