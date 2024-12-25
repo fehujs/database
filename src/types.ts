@@ -54,13 +54,17 @@ export interface DatabaseProviderInterface {
     get db(): any | undefined
     get dbPath(): string
     
-    createTable: (table: CreateTable) => void
-    alterTable: (table: AlterTable) => void
-    dropTable: (table: Table) => void
+    createTable: (table: CreateTable) => Promise<void>
+    alterTable: (table: AlterTable) => Promise<void>
+    dropTable: (table: Table) => Promise<void>
 
     query (table: Table): any
     select <T extends ModelObject> (table: Table, condition: Conditions): Promise<T[]>
     insert <T extends ModelObject> (table: Table, value: T): Promise<T>
     update <T extends ModelObject> (table: Table, condition: Conditions, value: T): Promise<T>
     delete <T extends ModelObject> (table: Table, condition: Conditions): Promise<T[]>
+}
+
+export interface NameInterface {
+    readonly name: string
 }

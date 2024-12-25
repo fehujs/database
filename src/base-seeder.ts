@@ -1,5 +1,8 @@
+import { NameInterface } from "./types"
 
-export default abstract class BaseSeeder {
+export default abstract class BaseSeeder implements NameInterface{
+    declare readonly name: string
+    
     public async run() {}
 
     public static async runSeeder(seederName: string, seeder: BaseSeeder) {

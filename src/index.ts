@@ -10,6 +10,8 @@
 import BaseMigration from "./base-migration"
 import BaseModel from "./base-model"
 import BaseSeeder from "./base-seeder"
+import { CONFIG } from "./config"
+export { loadAndInstanciateMigrations, loadAndInstanciateSeeders } from "./helpers"
 import SQLiteDatabaseProvider from "./providers/sqlite"
 import type {
     AlterTable,
@@ -39,6 +41,7 @@ export {
     BaseModel,
     BaseSeeder,
     Column,
+    CONFIG,
     CreateTable,
     DatabaseConfig,
     DatabaseProviderInterface,

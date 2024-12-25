@@ -1,9 +1,11 @@
 import { existsSync, readFileSync, writeFileSync } from "fs"
-import { MigrationActions, Table } from "./types"
+import { MigrationActions, NameInterface, Table } from "./types"
 
-export default abstract class BaseMigration {
+export default abstract class BaseMigration implements NameInterface {
     protected abstract table: Table
     public static migrationsFilePath: string = "migrations.json"
+
+    declare readonly name: string
 
     public getTable() {
         return this.table
