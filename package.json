@@ -1,6 +1,6 @@
 {
   "name": "@fehujs/database",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Fehujs database package",
   "main": "build/index.js",
   "type": "module",
